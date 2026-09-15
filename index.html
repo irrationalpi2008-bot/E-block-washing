@@ -1,0 +1,2449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>E Block Laundry Allocation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --surface-raised: #F1F5F9;
+    --surface-hover: #E2E8F0;
+    --ink: #0F172A;
+    --ink-muted: #64748B;
+    --line: #CBD5E1;
+    --line-light: #E2E8F0;
+    --primary: #0F766E;
+    --primary-hover: #115E59;
+    --primary-light: #CCFBF1;
+    --primary-text: #042F2E;
+    --gold: #B45309;
+    --gold-bg: #FEF3C7;
+    --green: #15803D;
+    --green-bg: #DCFCE7;
+    --amber: #B45309;
+    --amber-bg: #FEF3C7;
+    --red: #B91C1C;
+    --red-bg: #FEE2E2;
+
+    /* Distinct priority tokens */
+    --p1: #DC2626;
+    --p2: #EA580C;
+    --p3: #16A34A;
+    --p4: #2563EB;
+    --p5: #7C3AED;
+    --p6: #0891B2;
+    --p7: #DB2777;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.45;
+  }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+
+  /* Header */
+  header.site {
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 22px;
+    box-shadow: 3px 3px 0px var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .site-title-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+  header.site h1 {
+    font-size: 1.45rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+  header.site .sub {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    margin-top: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .user-badge {
+    background: var(--surface-raised);
+    border: 1.5px solid var(--line);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .user-badge strong { color: var(--ink); }
+
+  /* Buttons */
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.12s ease;
+  }
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    border: 1.5px solid var(--ink);
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .btn-sm:hover {
+    background: var(--surface-raised);
+    transform: translateY(-1px);
+  }
+  .btn-admin-pill {
+    background: var(--surface);
+    color: var(--ink-muted);
+    border: 1.5px dashed var(--line);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .btn-admin-pill:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: #fff;
+    border: 1.5px solid var(--ink);
+    padding: 11px 20px;
+    font-size: 0.92rem;
+    border-radius: 6px;
+    box-shadow: 2px 2px 0px var(--primary);
+  }
+  .btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 3px 3px 0px var(--ink);
+  }
+  .btn-primary:disabled {
+    background: var(--line);
+    border-color: var(--line);
+    color: var(--ink-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  /* Auth & Login Card */
+  .auth-card {
+    background: var(--surface);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    max-width: 460px;
+    margin: 40px auto;
+    padding: 34px 30px;
+    box-shadow: 5px 5px 0px var(--ink);
+  }
+  .auth-card h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .auth-card p {
+    font-size: 0.86rem;
+    color: var(--ink-muted);
+    margin: 0 0 22px;
+    line-height: 1.5;
+  }
+  label {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 5px;
+    letter-spacing: 0.04em;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  input[type=text], input[type=password] {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1.5px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    margin-bottom: 16px;
+    transition: border-color 0.15s;
+  }
+  input[type=password] {
+    letter-spacing: 0.15em;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  input[type=text]:focus, input[type=password]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+  }
+  .auth-error {
+    color: var(--red);
+    font-size: 0.82rem;
+    margin: -8px 0 16px;
+    font-weight: 600;
+  }
+  .auth-notice {
+    background: var(--surface-raised);
+    border-left: 3px solid var(--primary);
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    color: var(--ink);
+    margin-bottom: 16px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* Mode Navigation / View Switcher */
+  .mode-nav-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .mode-toggle-group {
+    display: inline-flex;
+    background: var(--surface-raised);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 4px;
+    gap: 4px;
+    box-shadow: 2.5px 2.5px 0px var(--ink);
+  }
+  .mode-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1.5px solid transparent;
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .mode-toggle-btn:hover {
+    color: var(--ink);
+    background: var(--surface-hover);
+  }
+  .mode-toggle-btn.active {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+    box-shadow: 1px 1px 0px rgba(0,0,0,0.15);
+  }
+  .mode-toggle-btn .badge-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .mode-toggle-btn.active .badge-pill {
+    background: rgba(255,255,255,0.22);
+    border-color: transparent;
+    color: #fff;
+  }
+  .preview-indicator-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--primary-text);
+    background: var(--primary-light);
+    border: 1.5px solid var(--primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+  }
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+    display: inline-block;
+    animation: pulse 1.8s infinite ease-in-out;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.45; }
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 2px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 10px 18px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    border-radius: 6px 6px 0 0;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover {
+    color: var(--ink);
+    background: var(--surface-raised);
+  }
+  .tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: var(--surface);
+  }
+
+  /* Assigned & Preview Hero Cards */
+  .assigned-hero, .preview-hero {
+    background: var(--ink);
+    color: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+    box-shadow: 4px 4px 0px var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .preview-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: var(--primary-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .preview-hero .hero-chip-sim {
+    background: var(--primary-light);
+    color: var(--primary-text);
+    font-weight: 700;
+  }
+  .preview-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .preview-stat-card {
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 10px 14px;
+    box-shadow: 2px 2px 0px var(--ink);
+    text-align: center;
+  }
+  .preview-stat-card .val {
+    font-size: 1.25rem;
+    font-weight: 800;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--ink);
+  }
+  .preview-stat-card .lbl {
+    font-size: 0.7rem;
+    color: var(--ink-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-top: 2px;
+  }
+  .preview-switchback-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin-top: 18px;
+    box-shadow: 2.5px 2.5px 0px var(--ink);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .preview-switchback-bar span {
+    font-size: 0.86rem;
+    color: var(--ink);
+  }
+  .assigned-hero h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .assigned-hero .time-highlight {
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'IBM Plex Mono', monospace;
+    background: rgba(255,255,255,0.14);
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 6px;
+    color: #F8FAFC;
+  }
+  .assigned-hero .meta-chips {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .assigned-hero .hero-chip {
+    background: rgba(255,255,255,0.18);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .btn-hero-action {
+    background: #fff;
+    color: var(--ink);
+    border: 1.5px solid #fff;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 0.84rem;
+    font-weight: 700;
+  }
+  .btn-hero-action:hover {
+    background: var(--primary-light);
+    color: var(--primary-text);
+  }
+
+  /* Priority Selection Bar */
+  .priority-bar-wrap {
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    box-shadow: 3px 3px 0px var(--ink);
+  }
+  .priority-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .priority-bar-chips {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .pchip {
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 7px 11px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.12s ease;
+  }
+  .pchip:hover {
+    border-color: var(--ink);
+    background: var(--surface-raised);
+  }
+  .pchip.active {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: #fff;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+  }
+  .pchip .p-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .pchip .p-slot-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    opacity: 0.85;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pchip.active .p-slot-text {
+    opacity: 1;
+    color: #E2E8F0;
+  }
+
+  /* Action row */
+  .action-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 12px 18px;
+  }
+  .action-status {
+    font-size: 0.84rem;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-pill {
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .saved-flash-msg {
+    color: var(--green);
+    font-weight: 700;
+    font-size: 0.82rem;
+  }
+
+  /* Table styles */
+  .tablewrap {
+    overflow-x: auto;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 3px 3px 0px var(--ink);
+    max-height: 75vh;
+  }
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 960px;
+  }
+  th, td {
+    border-right: 1px solid var(--line-light);
+    border-bottom: 1px solid var(--line-light);
+    padding: 0;
+  }
+  th:last-child, td:last-child { border-right: none; }
+  tr:last-child td { border-bottom: none; }
+
+  th {
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 10px 8px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  th.timecol {
+    text-align: left;
+    padding-left: 14px;
+    width: 130px;
+    position: sticky;
+    left: 0;
+    z-index: 20;
+    background: var(--ink);
+  }
+  td.timecol {
+    font-size: 0.75rem;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--ink-muted);
+    padding: 10px 12px;
+    white-space: nowrap;
+    background: var(--surface-raised);
+    font-weight: 600;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    border-right: 1.5px solid var(--line);
+  }
+
+  td.slotcell {
+    vertical-align: top;
+    padding: 8px 6px;
+    cursor: pointer;
+    background: #fff;
+    transition: background 0.12s ease;
+    min-width: 118px;
+    height: 76px;
+  }
+  td.slotcell:hover {
+    background: #F0FDF4;
+  }
+  td.slotcell.mine {
+    background: #F0FDFA;
+    box-shadow: inset 0 0 0 2px var(--primary);
+  }
+  td.slotcell.my-assigned-slot {
+    background: #FEF3C7 !important;
+    box-shadow: inset 0 0 0 2.5px var(--gold) !important;
+  }
+
+  .cell-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+  }
+  .total-badge {
+    font-size: 0.76rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .total-badge.ok { background: var(--green-bg); color: var(--green); }
+  .total-badge.full { background: var(--amber-bg); color: var(--amber); }
+  .total-badge.over { background: var(--red-bg); color: var(--red); }
+
+  .mine-badge {
+    font-size: 0.66rem;
+    font-weight: 800;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .assigned-peeps {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    margin-top: 2px;
+  }
+  .peep-pill {
+    font-size: 0.66rem;
+    padding: 2px 4px;
+    border-radius: 3px;
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .peep-pill.is-me {
+    background: var(--gold-bg);
+    border-color: var(--gold);
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .pips {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+  }
+  .pip {
+    font-size: 0.58rem;
+    font-family: 'IBM Plex Mono', monospace;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 2px;
+  }
+  .pip.zero {
+    background: var(--surface-raised);
+    color: var(--line);
+    border: 1px solid var(--line-light);
+  }
+
+  /* Legend & Info */
+  .legend-card {
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-top: 18px;
+  }
+  .legend-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  /* Master Schedule Table */
+  .master-wrap {
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 3px 3px 0px var(--ink);
+  }
+  .master-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 220px;
+    margin-bottom: 0 !important;
+  }
+  .day-filter-bar {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    padding: 7px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .filter-pill.active {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .master-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+  }
+  .master-table th {
+    background: var(--surface-raised);
+    color: var(--ink);
+    border-bottom: 2px solid var(--line);
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .master-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line-light);
+  }
+  .master-table tr:hover td {
+    background: var(--surface-raised);
+  }
+  .priority-tag {
+    font-size: 0.72rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal-box {
+    background: var(--surface);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 580px;
+    box-shadow: 6px 6px 0px var(--ink);
+    overflow: hidden;
+  }
+  .modal-header {
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .modal-body {
+    padding: 22px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .stat-card {
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+  }
+  .stat-card .val {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .stat-card .lbl {
+    font-size: 0.7rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  @media(max-width: 768px) {
+    header.site { flex-direction: column; align-items: flex-start; }
+    .header-actions { width: 100%; justify-content: space-between; }
+    .assigned-hero { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media print {
+    body { background: #fff !important; color: #000 !important; font-size: 10pt; }
+    .wrap { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+    header.site, .mode-nav-wrap, .priority-bar-wrap, .action-row, .modal-overlay,
+    .header-actions, .search-input, .day-filter-bar, .tab-bar, .btn-hero-action,
+    .preview-switchback-bar, .export-pdf-btn, #switchUserBtn, #openAdminBtn {
+      display: none !important;
+    }
+    .assigned-hero {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+      border: 1px solid #cbd5e1 !important;
+      box-shadow: none !important;
+      page-break-inside: avoid;
+    }
+    .assigned-hero h2, .assigned-hero .time-highlight { color: #0f172a !important; }
+    .hero-chip { background: #e2e8f0 !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
+    .tablewrap, .master-table { border: 1px solid #94a3b8 !important; overflow: visible !important; width: 100% !important; }
+    table { page-break-inside: auto; }
+    tr { page-break-inside: avoid; page-break-after: auto; }
+    th { background: #f1f5f9 !important; color: #0f172a !important; }
+    td { border-color: #cbd5e1 !important; }
+    .slotcell { background: #fff !important; color: #000 !important; }
+    .peep-pill { background: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; }
+    .legend-card { border: 1px solid #cbd5e1 !important; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+// Schedule Definition
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const TIMES = [
+  ["00:00","01:30"],["01:30","03:00"],["03:00","04:30"],["04:30","06:00"],
+  ["06:00","07:30"],["07:30","09:00"],["09:00","10:30"],["10:30","12:00"],
+  ["12:00","13:30"],["13:30","15:00"],["15:00","16:30"],["16:30","18:00"],
+  ["18:00","19:30"],["19:30","21:00"],["21:00","22:30"],["22:30","00:00"]
+];
+
+const PRIORITY_COLORS = {
+  1: "var(--p1)",
+  2: "var(--p2)",
+  3: "var(--p3)",
+  4: "var(--p4)",
+  5: "var(--p5)",
+  6: "var(--p6)",
+  7: "var(--p7)"
+};
+
+function slotId(day, ti){ return day + "-" + ti; }
+function slotLabel(day, ti){ return day + " " + TIMES[ti][0] + "\u2013" + TIMES[ti][1]; }
+function sanitize(s){ return (s||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,""); }
+
+let state = {
+  person: null,
+  sessionToken: localStorage.getItem('laundry_session_token') || "",
+  priorities: {},
+  activePriority: 1,
+  counts: {},
+  status: { lifecycle: 'open', total_submitted: 0, total_assigned: 0, resident_count: 0, target_residents: 0 },
+  myAssignment: null,
+  allAssignments: null,
+  activeView: 'preferences', // 'preferences' | 'preview'
+  previewData: null,
+  loadingPreview: false,
+  currentTab: 'schedule', // 'schedule' | 'master'
+  saving: false,
+  savedFlash: false,
+  loadingCounts: true,
+
+  // Auth flow state
+  authStep: 'details', // 'details' | 'pin_login' | 'pin_register'
+  authName: localStorage.getItem('laundry_last_name') || "",
+  authRoom: localStorage.getItem('laundry_last_room') || "",
+  authError: "",
+  authLoading: false,
+
+  // Admin state
+  adminModalOpen: false,
+  adminKeyInput: "",
+  adminResidentCount: null,
+  adminCountTimer: null,
+  adminStats: null,
+  adminRunning: false,
+  adminMsg: "",
+  adminResetTarget: "",
+
+  // Master timetable search
+  masterSearch: "",
+  masterDayFilter: "ALL"
+};
+
+function formatSlotLabelClient(slotId){
+  if(!slotId) return '';
+  const parts = slotId.split('-');
+  const day = parts[0];
+  const ti = Number(parts[1]);
+  if(0 <= ti && ti < TIMES.length){
+    return `${day} ${TIMES[ti][0]}–${TIMES[ti][1]}`;
+  }
+  return slotId;
+}
+
+async function fetchJson(url, options = {}){
+  const headers = { 'Content-Type': 'application/json', ...options.headers };
+  if(state.sessionToken){
+    headers['Authorization'] = `Bearer ${state.sessionToken}`;
+  }
+
+  const response = await fetch(url, {
+    cache: 'no-store',
+    ...options,
+    headers
+  });
+
+  if (response.status === 401 && state.person) {
+    // Session expired or invalid PIN token
+    logoutResident("Session expired. Please log in with your PIN.");
+    throw new Error("Unauthorized");
+  }
+
+  if (!response.ok) {
+    let errorMsg = `Request failed: ${response.status}`;
+    try {
+      const err = await response.json();
+      if (err.error) errorMsg = err.error;
+    } catch(e) {}
+    throw new Error(errorMsg);
+  }
+  return response.json();
+}
+
+// ---------------- Data Sync ----------------
+async function loadServerStatus(){
+  try {
+    const data = await fetchJson('/status');
+    state.status = data;
+  } catch(e) {
+    console.error("Failed to load status:", e);
+  }
+}
+
+async function loadCounts(){
+  const counts = {};
+  DAYS.forEach(d => TIMES.forEach((_,ti) => {
+    counts[slotId(d,ti)] = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,total:0};
+  }));
+
+  try {
+    const data = await fetchJson('/counts');
+    Object.keys(data || {}).forEach(sid => {
+      const entry = data[sid] || {};
+      counts[sid] = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,total:0};
+      for (let p = 1; p <= 7; p++) {
+        counts[sid][p] = Number(entry[p] || 0);
+      }
+      counts[sid].total = counts[sid][1];
+    });
+  } catch (e) {
+    console.warn("Could not fetch server counts:", e);
+  }
+
+  state.counts = counts;
+  state.loadingCounts = false;
+  if(state.person || state.authStep === 'details'){
+    render();
+  }
+}
+
+async function loadMyPick(name, room){
+  try {
+    const data = await fetchJson(`/pick?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name)}`);
+    if (data && data.priorities) {
+      state.priorities = data.priorities;
+    }
+  } catch (e) {
+    // handled by 401 redirect or error
+  }
+}
+
+async function loadMyAssignment(name, room){
+  try {
+    const data = await fetchJson(`/myassignment?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name)}`);
+    state.myAssignment = data && data.assigned ? data : null;
+  } catch(e) {
+    state.myAssignment = null;
+  }
+}
+
+async function loadAllAssignments(){
+  try {
+    const data = await fetchJson('/assign');
+    state.allAssignments = data;
+  } catch(e) {
+    console.error("Failed to load assignments:", e);
+  }
+}
+
+async function loadPreviewAssignment(forceRender = true){
+  if(!state.person) return;
+  state.loadingPreview = true;
+  if(forceRender) render();
+  try {
+    const data = await fetchJson('/preview');
+    state.previewData = data;
+  } catch(e) {
+    console.warn("Failed to load preview assignment:", e);
+  } finally {
+    state.loadingPreview = false;
+    if(forceRender) render();
+  }
+}
+
+function getMyPreviewAssignment(){
+  if(!state.previewData || !state.previewData.people || !state.person) return null;
+  const userKey = sanitize(state.person.room) + "__" + sanitize(state.person.name);
+  let p = state.previewData.people[userKey];
+  if(!p){
+    p = Object.values(state.previewData.people).find(item => 
+      sanitize(item.room) === sanitize(state.person.room) && 
+      sanitize(item.name) === sanitize(state.person.name)
+    );
+  }
+  if(p && p.slot) {
+    const parts = (p.slot || '').split('-');
+    const day = parts[0] || '';
+    const ti = parseInt(parts[1], 10);
+    const timeRange = (0 <= ti && ti < TIMES.length) ? `${TIMES[ti][0]}–${TIMES[ti][1]}` : (p.slot_label || p.slot);
+    return {
+      assigned: true,
+      slot: p.slot,
+      slot_label: p.slot_label || `${day} ${timeRange}`,
+      day: day,
+      time_range: timeRange,
+      priority_awarded: p.priority_awarded,
+      machine: p.machine || 1
+    };
+  }
+  return null;
+}
+
+async function switchToPreview(){
+  state.activeView = 'preview';
+  render();
+  // If resident has picked priorities, auto-save so preview calculation immediately uses them
+  if(state.person && Object.keys(state.priorities).length > 0){
+    try {
+      await fetchJson('/save', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: state.person.name,
+          room: state.person.room,
+          priorities: state.priorities
+        })
+      });
+      state.savedFlash = true;
+      setTimeout(() => { state.savedFlash = false; render(); }, 3000);
+    } catch(e) {
+      console.warn("Auto-save before preview failed:", e);
+    }
+  }
+  await loadPreviewAssignment(true);
+}
+
+function switchToPreferences(){
+  state.activeView = 'preferences';
+  render();
+}
+
+async function savePick(){
+  if(!state.person) return;
+  state.saving = true;
+  render();
+
+  const payload = {
+    name: state.person.name,
+    room: state.person.room,
+    priorities: state.priorities
+  };
+
+  try {
+    await fetchJson('/save', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    state.savedFlash = true;
+  } catch(e) {
+    alert("Error saving: " + e.message);
+  }
+
+  state.saving = false;
+  render();
+  await loadCounts();
+  await loadServerStatus();
+  if(state.activeView === 'preview'){
+    await loadPreviewAssignment(false);
+  }
+  setTimeout(()=>{ state.savedFlash = false; render(); }, 3000);
+}
+
+function handleCellClick(sid){
+  if(state.status.lifecycle === 'assigned' || state.activeView === 'preview') {
+    return;
+  }
+  const current = state.priorities[sid];
+  if(current === state.activePriority){
+    delete state.priorities[sid];
+  } else {
+    Object.keys(state.priorities).forEach(k => {
+      if(state.priorities[k] === state.activePriority) delete state.priorities[k];
+    });
+    state.priorities[sid] = state.activePriority;
+
+    // Auto-advance to next unset priority
+    for(let p=1; p<=7; p++){
+      if(!Object.values(state.priorities).includes(p)){
+        state.activePriority = p;
+        break;
+      }
+    }
+  }
+  render();
+}
+
+function setActivePriority(p){
+  state.activePriority = p;
+  render();
+}
+
+function logoutResident(noticeMsg = ""){
+  state.person = null;
+  state.sessionToken = "";
+  state.priorities = {};
+  state.myAssignment = null;
+  state.previewData = null;
+  state.activeView = 'preferences';
+  state.authStep = 'details';
+  state.authError = noticeMsg;
+  localStorage.removeItem('laundry_session_token');
+  render();
+}
+
+function downloadICS(day, timeRange){
+  const targetDayIdx = DAYS.indexOf(day) + 1;
+  const now = new Date();
+  const currentDay = now.getDay();
+  let daysUntil = (targetDayIdx - currentDay + 7) % 7;
+  if(daysUntil === 0) daysUntil = 7;
+  
+  const targetDate = new Date(now.getTime() + daysUntil * 86400000);
+  const yyyy = targetDate.getFullYear();
+  const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
+  const dd = String(targetDate.getDate()).padStart(2, '0');
+
+  const [t0, t1] = timeRange.split('–');
+  const [h0, m0] = t0.trim().split(':');
+  const [h1, m1] = t1.trim().split(':');
+
+  const dtStart = `${yyyy}${mm}${dd}T${h0}${m0}00`;
+  const dtEnd = `${yyyy}${mm}${dd}T${h1}${m1}00`;
+
+  const icsContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//E Block Laundry//EN',
+    'BEGIN:VEVENT',
+    `SUMMARY:Laundry Slot - E Block`,
+    `DESCRIPTION:E Block Washing Slot: ${day} ${timeRange}.`,
+    `LOCATION:E Block Laundry Room`,
+    `DTSTART:${dtStart}`,
+    `DTEND:${dtEnd}`,
+    `RRULE:FREQ=WEEKLY`,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', `E_Block_Laundry_${day}.ics`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function downloadAllocationsPdf(view = 'all', isPreview = false, key = null){
+  let url = '';
+  if (key) {
+    url = `/admin/export.pdf?key=${encodeURIComponent(key)}&view=${encodeURIComponent(view)}${isPreview ? '&preview=1' : ''}`;
+  } else {
+    url = `/export.pdf?view=${encodeURIComponent(view)}${isPreview ? '&preview=1' : ''}`;
+    if (state.sessionToken) {
+      url += `&token=${encodeURIComponent(state.sessionToken)}`;
+    }
+  }
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', isPreview ? 'e_block_laundry_simulation_preview.pdf' : 'e_block_laundry_allocations.pdf');
+  link.setAttribute('target', '_blank');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// ---------------- Authentication Actions ----------------
+async function handleCheckAuth(){
+  const name = state.authName.trim();
+  const room = state.authRoom.trim();
+  if(!name || !room){
+    state.authError = "Please enter both your full name and room number.";
+    render();
+    return;
+  }
+  state.authLoading = true;
+  state.authError = "";
+  render();
+
+  try {
+    const res = await fetchJson('/auth/status', {
+      method: 'POST',
+      body: JSON.stringify({ name, room })
+    });
+    localStorage.setItem('laundry_last_name', name);
+    localStorage.setItem('laundry_last_room', room);
+    if(res.registered){
+      state.authStep = 'pin_login';
+    } else {
+      state.authStep = 'pin_register';
+    }
+  } catch(e) {
+    state.authError = e.message;
+  }
+  state.authLoading = false;
+  render();
+}
+
+async function handleRegisterPin(pin, confirmPin){
+  if(!pin || pin.length < 4){
+    state.authError = "PIN must be at least 4 digits.";
+    render();
+    return;
+  }
+  if(pin !== confirmPin){
+    state.authError = "PINs do not match. Please re-enter.";
+    render();
+    return;
+  }
+  state.authLoading = true;
+  state.authError = "";
+  render();
+
+  try {
+    const res = await fetchJson('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: state.authName.trim(),
+        room: state.authRoom.trim(),
+        pin
+      })
+    });
+    state.sessionToken = res.session_token;
+    localStorage.setItem('laundry_session_token', res.session_token);
+    state.person = { name: res.name, room: res.room };
+    state.authStep = 'details';
+
+    await loadMyPick(res.name, res.room);
+    await loadMyAssignment(res.name, res.room);
+    await loadAllAssignments();
+    await loadCounts();
+  } catch(e) {
+    state.authError = e.message;
+  }
+  state.authLoading = false;
+  render();
+}
+
+async function handleLoginPin(pin){
+  if(!pin){
+    state.authError = "Please enter your security PIN.";
+    render();
+    return;
+  }
+  state.authLoading = true;
+  state.authError = "";
+  render();
+
+  try {
+    const res = await fetchJson('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: state.authName.trim(),
+        room: state.authRoom.trim(),
+        pin
+      })
+    });
+    state.sessionToken = res.session_token;
+    localStorage.setItem('laundry_session_token', res.session_token);
+    state.person = { name: res.name, room: res.room };
+    state.authStep = 'details';
+
+    await loadMyPick(res.name, res.room);
+    await loadMyAssignment(res.name, res.room);
+    await loadAllAssignments();
+    await loadCounts();
+  } catch(e) {
+    state.authError = e.message;
+  }
+  state.authLoading = false;
+  render();
+}
+
+// ---------------- Admin Actions ----------------
+async function runAdminAssign(){
+  if(!state.adminKeyInput){
+    alert("Please enter the Admin Key.");
+    return;
+  }
+  state.adminRunning = true;
+  state.adminMsg = "";
+  render();
+
+  try {
+    const res = await fetchJson(`/assign?key=${encodeURIComponent(state.adminKeyInput)}`, {
+      method: 'POST'
+    });
+    state.adminStats = res.stats;
+    state.adminMsg = `Successfully allocated slots for ${res.total_people} residents.`;
+    await loadServerStatus();
+    await loadAllAssignments();
+    if(state.person){
+      await loadMyAssignment(state.person.name, state.person.room);
+    }
+  } catch(e) {
+    state.adminMsg = "Error: " + e.message;
+  }
+  state.adminRunning = false;
+  render();
+}
+
+async function resetAdminAssignments(){
+  if(!confirm("Are you sure you want to clear current allocations and reopen submissions?")) return;
+  try {
+    await fetchJson(`/admin/reset?key=${encodeURIComponent(state.adminKeyInput)}`, {
+      method: 'POST'
+    });
+    state.adminMsg = "Assignments cleared. Submissions are open.";
+    await loadServerStatus();
+    await loadAllAssignments();
+    if(state.person){
+      await loadMyAssignment(state.person.name, state.person.room);
+    }
+  } catch(e) {
+    state.adminMsg = "Error: " + e.message;
+  }
+  render();
+}
+
+async function resumePreferenceChoosing(){
+  if(!confirm("Resume preference choosing for all residents? Current slot assignments will be cleared, but saved preferences will be kept.")) return;
+  try {
+    await fetchJson(`/admin/reset?key=${encodeURIComponent(state.adminKeyInput)}`, {
+      method: 'POST'
+    });
+    state.adminMsg = "Preference choosing resumed. Saved preferences were kept.";
+    state.adminStats = null;
+    await loadServerStatus();
+    await loadAllAssignments();
+    if(state.person){
+      await loadMyAssignment(state.person.name, state.person.room);
+    }
+  } catch(e) {
+    state.adminMsg = "Error resuming preference choosing: " + e.message;
+  }
+  render();
+}
+
+async function resetResidentPin(){
+  const target = (state.adminResetTarget || "").trim();
+  if(!target){
+    alert("Please enter resident room/name to reset.");
+    return;
+  }
+  try {
+    const res = await fetchJson(`/admin/reset-pin?key=${encodeURIComponent(state.adminKeyInput)}&room_name=${encodeURIComponent(sanitize(target))}`, {
+      method: 'POST'
+    });
+    state.adminMsg = res.message || "PIN reset successfully.";
+    state.adminResetTarget = "";
+  } catch(e) {
+    state.adminMsg = "Error resetting PIN: " + e.message;
+  }
+  render();
+}
+
+async function loadAdminResidentCount(){
+  if(!state.adminKeyInput) return;
+  try {
+    const response = await fetch('/admin/roster', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({key: state.adminKeyInput})
+    });
+    const data = await response.json();
+    if(!response.ok) return;
+    const count = Array.isArray(data.residents) ? data.residents.length : 0;
+    if(state.adminResidentCount !== count){
+      state.adminResidentCount = count;
+      if(state.adminModalOpen) render();
+    }
+  } catch(e) {
+    console.error("Failed to load resident count:", e);
+  }
+}
+
+// ---------------- Render Views ----------------
+function renderAuth(){
+  const app = document.getElementById('app');
+  const isAssigned = state.status.lifecycle === 'assigned';
+
+  let bodyContent = '';
+
+  if(state.authStep === 'details'){
+    bodyContent = `
+      <div class="auth-card">
+        <h2>${isAssigned ? 'View Your Assigned Slot' : 'Resident Portal Login'}</h2>
+        <p>
+          ${isAssigned 
+            ? 'Final allocations are published. Enter your details to view your assigned slot.'
+            : 'Enter your name and room to choose your 7 preferred washing slots.'}
+        </p>
+        <label for="nameInput">Full Name</label>
+        <input type="text" id="nameInput" placeholder="e.g. E block ka tatta" value="${escapeHtml(state.authName)}" />
+        <label for="roomInput">Room Number</label>
+        <input type="text" id="roomInput" placeholder="e.g. 75" value="${escapeHtml(state.authRoom)}" />
+        ${state.authError ? `<div class="auth-error">${escapeHtml(state.authError)}</div>` : ''}
+        <button class="btn-primary" style="width:100%;" id="checkAuthBtn" ${state.authLoading ? 'disabled' : ''}>
+          ${state.authLoading ? 'Verifying&hellip;' : 'Continue &rarr;'}
+        </button>
+      </div>
+    `;
+  } else if (state.authStep === 'pin_register'){
+    bodyContent = `
+      <div class="auth-card">
+        <h2>Set Security PIN</h2>
+        <div class="auth-notice">
+          Setting up portal for <strong>${escapeHtml(state.authName)}</strong> (${escapeHtml(state.authRoom)})
+        </div>
+        <p>Create a 4-to-6 digit PIN to protect your washing picks from being modified by others.</p>
+        <label for="regPin">Create Security PIN</label>
+        <input type="password" id="regPin" placeholder="4-digit PIN" maxlength="12" />
+        <label for="regPinConfirm">Confirm Security PIN</label>
+        <input type="password" id="regPinConfirm" placeholder="Re-enter PIN" maxlength="12" />
+        ${state.authError ? `<div class="auth-error">${escapeHtml(state.authError)}</div>` : ''}
+        <div style="display:flex; gap:10px;">
+          <button class="btn-sm" id="authBackBtn" style="padding:11px 16px;">&larr; Back</button>
+          <button class="btn-primary" style="flex:1;" id="submitRegBtn" ${state.authLoading ? 'disabled' : ''}>
+            ${state.authLoading ? 'Creating&hellip;' : 'Set PIN & Enter'}
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (state.authStep === 'pin_login'){
+    bodyContent = `
+      <div class="auth-card">
+        <h2>Enter Security PIN</h2>
+        <div class="auth-notice">
+          Logging in as <strong>${escapeHtml(state.authName)}</strong> (${escapeHtml(state.authRoom)})
+        </div>
+        <label for="loginPin">Security PIN</label>
+        <input type="password" id="loginPin" placeholder="Enter your PIN" maxlength="12" autofocus />
+        ${state.authError ? `<div class="auth-error">${escapeHtml(state.authError)}</div>` : ''}
+        <div style="display:flex; gap:10px;">
+          <button class="btn-sm" id="authBackBtn" style="padding:11px 16px;">&larr; Back</button>
+          <button class="btn-primary" style="flex:1;" id="submitLoginBtn" ${state.authLoading ? 'disabled' : ''}>
+            ${state.authLoading ? 'Verifying&hellip;' : 'Log In &rarr;'}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  app.innerHTML = `
+    <header class="site">
+      <div class="site-title-wrap">
+        <h1>E Block Laundry</h1>
+        <div class="sub">3 Machines &middot; 1.5h Cycles (24/7)</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-admin-pill" id="openAdminBtn">Admin Control</button>
+      </div>
+    </header>
+
+    ${bodyContent}
+    ${renderAdminModalHtml()}
+  `;
+
+  // Attach auth events
+  if(document.getElementById('nameInput')){
+    document.getElementById('nameInput').oninput = (e) => state.authName = e.target.value;
+  }
+  if(document.getElementById('roomInput')){
+    document.getElementById('roomInput').oninput = (e) => state.authRoom = e.target.value;
+  }
+  if(document.getElementById('checkAuthBtn')){
+    document.getElementById('checkAuthBtn').onclick = handleCheckAuth;
+  }
+  if(document.getElementById('authBackBtn')){
+    document.getElementById('authBackBtn').onclick = () => {
+      state.authStep = 'details';
+      state.authError = '';
+      render();
+    };
+  }
+  if(document.getElementById('submitRegBtn')){
+    document.getElementById('submitRegBtn').onclick = () => {
+      const p = document.getElementById('regPin').value;
+      const pc = document.getElementById('regPinConfirm').value;
+      handleRegisterPin(p, pc);
+    };
+  }
+  if(document.getElementById('submitLoginBtn')){
+    document.getElementById('submitLoginBtn').onclick = () => {
+      const p = document.getElementById('loginPin').value;
+      handleLoginPin(p);
+    };
+  }
+
+  attachAdminModalEvents();
+}
+
+function renderApp(){
+  const app = document.getElementById('app');
+  const isAssigned = state.status.lifecycle === 'assigned';
+  const isPreview = !isAssigned && state.activeView === 'preview';
+  const donePicks = Object.keys(state.priorities).length;
+  const myPreviewAssigned = isPreview ? getMyPreviewAssignment() : null;
+
+  let headerHtml = `
+    <header class="site">
+      <div class="site-title-wrap">
+        <h1>E Block Laundry</h1>
+        <div class="sub">3 Machines &middot; 1.5h Cycles (24/7)</div>
+      </div>
+      <div class="header-actions">
+        <div class="user-badge">
+          <span><strong>${escapeHtml(state.person.name)}</strong> (${escapeHtml(state.person.room)})</span>
+          <button class="btn-sm" id="switchUserBtn" style="padding: 2px 8px; font-size: 0.74rem;">Switch</button>
+        </div>
+        <button class="btn-admin-pill" id="openAdminBtn">Admin Control</button>
+      </div>
+    </header>
+  `;
+
+  let modeNavHtml = '';
+  if (!isAssigned) {
+    modeNavHtml = `
+      <div class="mode-nav-wrap">
+        <div class="mode-toggle-group">
+          <button class="mode-toggle-btn ${state.activeView === 'preferences' ? 'active' : ''}" id="modePrefsBtn">
+            <span>✎ Edit Preferences</span>
+            <span class="badge-pill">${donePicks}/7 Chosen</span>
+          </button>
+          <button class="mode-toggle-btn ${state.activeView === 'preview' ? 'active' : ''}" id="modePreviewBtn">
+            <span>👁 Preview Allotment</span>
+            <span class="badge-pill">${state.loadingPreview ? 'Loading…' : 'Live Sim'}</span>
+          </button>
+        </div>
+        ${isPreview ? `
+          <div class="preview-indicator-chip">
+            <span class="pulse-dot"></span> Live Simulation (Database Unchanged)
+          </div>
+        ` : `
+          <button class="btn-sm" id="jumpToPreviewBtn" style="border-color:var(--ink); font-weight:700;">
+            Preview Simulated Allotment &rarr;
+          </button>
+        `}
+      </div>
+    `;
+  }
+
+  let heroBannerHtml = '';
+  if (isAssigned) {
+    if (state.myAssignment && state.myAssignment.assigned) {
+      const a = state.myAssignment;
+      const prioText = a.priority_awarded ? `Choice #${a.priority_awarded}` : 'Fallback Slot';
+      heroBannerHtml = `
+        <div class="assigned-hero">
+          <div>
+            <h2>Assigned Washing Slot</h2>
+            <div class="time-highlight">${a.day}, ${a.time_range}</div>
+            <div class="meta-chips">
+              <span class="hero-chip">${prioText} Awarded</span>
+              <span class="hero-chip">Room ${escapeHtml(state.person.room)}</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <button class="btn-hero-action" id="downloadCalBtn">Add to Calendar (.ics)</button>
+            <button class="btn-hero-action" id="downloadPdfBtn" style="background:#0284c7; color:#fff; border-color:#0284c7;">Download PDF</button>
+            <button class="btn-hero-action" id="printScheduleBtn" style="background:transparent; color:#fff; border-color:rgba(255,255,255,0.4);">Print Notice</button>
+          </div>
+        </div>
+      `;
+    } else {
+      heroBannerHtml = `
+        <div class="assigned-hero" style="background: #334155;">
+          <div>
+            <h2>Allocations Finalized</h2>
+            <p style="margin: 4px 0 0; font-size: 0.88rem; opacity: 0.9;">
+              No specific slot found for Room ${escapeHtml(state.person.room)} (${escapeHtml(state.person.name)}).
+              Check the Master Schedule below or contact the hostel admin.
+            </p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <button class="btn-hero-action" id="downloadPdfBtn" style="background:#0284c7; color:#fff; border-color:#0284c7;">Download PDF</button>
+            <button class="btn-hero-action" id="printScheduleBtn" style="background:transparent; color:#fff; border-color:rgba(255,255,255,0.4);">Print Notice</button>
+          </div>
+        </div>
+      `;
+    }
+  } else if (isPreview) {
+    if (myPreviewAssigned && myPreviewAssigned.assigned) {
+      const pa = myPreviewAssigned;
+      const prioText = pa.priority_awarded ? `Choice #${pa.priority_awarded}` : 'Fallback Slot';
+      const prioColor = pa.priority_awarded ? (PRIORITY_COLORS[pa.priority_awarded] || 'var(--primary)') : 'var(--ink-muted)';
+      heroBannerHtml = `
+        <div class="preview-hero">
+          <div>
+            <div class="preview-tag"><span class="pulse-dot"></span> Live Simulated Allotment</div>
+            <h2>Your Projected Washing Slot</h2>
+            <div class="time-highlight">${pa.day}, ${pa.time_range}</div>
+            <div class="meta-chips">
+              <span class="hero-chip" style="background: ${prioColor}; color: #fff; font-weight:700;">${prioText} Awarded</span>
+              <span class="hero-chip">Room ${escapeHtml(state.person.room)}</span>
+              <span class="hero-chip">Machine #${pa.machine || 1}</span>
+              <span class="hero-chip hero-chip-sim">Simulation Only</span>
+            </div>
+          </div>
+          <div>
+            <button class="btn-hero-action" id="switchBackToPrefsBtn">✎ Edit / Change Preferences</button>
+          </div>
+        </div>
+      `;
+    } else {
+      heroBannerHtml = `
+        <div class="preview-hero" style="background: #1E293B;">
+          <div>
+            <div class="preview-tag"><span class="pulse-dot"></span> Live Simulated Allotment</div>
+            <h2>${donePicks === 0 ? 'No Preferences Chosen Yet' : 'Computing Your Allocation…'}</h2>
+            <p style="margin: 4px 0 0; font-size: 0.88rem; opacity: 0.9;">
+              ${donePicks === 0 
+                ? 'You have not selected any slot preferences yet. Switch to Edit Preferences to choose your 7 slots and view your projected allocation.'
+                : 'Your picks have been saved. If no slot is shown, ensure you have saved preferences or switch back to adjust choices.'}
+            </p>
+          </div>
+          <div>
+            <button class="btn-hero-action" id="switchBackToPrefsBtn">✎ Choose Preferences Now</button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  let priorityBarHtml = '';
+  if (!isAssigned && !isPreview) {
+    let chips = '';
+    for(let p = 1; p <= 7; p++){
+      const assignedSid = Object.keys(state.priorities).find(k => state.priorities[k] === p);
+      let label = "not set";
+      if(assignedSid) {
+        const parts = assignedSid.split('-');
+        const d = parts[0];
+        const ti = Number(parts[1]);
+        if(0 <= ti && ti < TIMES.length){
+          label = `${d} ${TIMES[ti][0]}`;
+        }
+      }
+      chips += `
+        <button class="pchip ${state.activePriority === p ? 'active' : ''}" data-p="${p}">
+          <span class="p-dot" style="background: ${PRIORITY_COLORS[p]}"></span>
+          <span>${p === 1 ? '1st' : p === 2 ? '2nd' : p === 3 ? '3rd' : p + 'th'}</span>
+          <span class="p-slot-text">${label}</span>
+        </button>
+      `;
+    }
+
+    priorityBarHtml = `
+      <div class="priority-bar-wrap">
+        <div class="priority-bar-header">
+          <span>1. Select Priority Rank</span>
+          <span>2. Click Slot on Grid to Assign</span>
+        </div>
+        <div class="priority-bar-chips">${chips}</div>
+      </div>
+
+      <div class="action-row">
+        <div class="action-status">
+          <span class="progress-pill">${donePicks}/7 Slots Chosen</span>
+          ${state.savedFlash ? '<span class="saved-flash-msg">Picks Saved Successfully</span>' : ''}
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <button class="btn-sm" id="quickPreviewBtn" style="border-color: var(--ink); font-weight: 700; padding: 11px 16px;">
+            👁 Preview Allotment &rarr;
+          </button>
+          <button class="btn-primary" id="savePicksBtn" ${state.saving ? 'disabled' : ''}>
+            ${state.saving ? 'Saving&hellip;' : (donePicks === 7 ? 'Save All 7 Picks' : `Save Progress (${donePicks}/7)`)}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  let previewStatsHtml = '';
+  if (isPreview && state.previewData) {
+    const stats = state.previewData.stats || {};
+    const totalSim = state.previewData.total_people || 0;
+    const p1 = stats['1'] || 0;
+    const p1Pct = totalSim > 0 ? Math.round((p1 / totalSim) * 100) : 0;
+    const p2 = stats['2'] || 0;
+    const p3 = stats['3'] || 0;
+    const fallbacks = stats['fallback'] || 0;
+    previewStatsHtml = `
+      <div class="preview-stats-bar">
+        <div class="preview-stat-card">
+          <div class="val" style="color: var(--primary);">${totalSim}</div>
+          <div class="lbl">Simulated Residents</div>
+        </div>
+        <div class="preview-stat-card">
+          <div class="val" style="color: var(--p1);">${p1} <span style="font-size:0.8rem; font-weight:600; color:var(--ink-muted);">(${p1Pct}%)</span></div>
+          <div class="lbl">1st Choice Awarded</div>
+        </div>
+        <div class="preview-stat-card">
+          <div class="val" style="color: var(--p2);">${p2 + p3}</div>
+          <div class="lbl">2nd/3rd Choice Awarded</div>
+        </div>
+        <div class="preview-stat-card">
+          <div class="val" style="color: var(--ink-muted);">${fallbacks}</div>
+          <div class="lbl">Fallback Slots</div>
+        </div>
+      </div>
+    `;
+  }
+
+  let tabsHtml = '';
+  if (isAssigned || isPreview) {
+    const dataSource = isAssigned ? state.allAssignments : state.previewData;
+    const residentCount = dataSource && dataSource.people ? Object.keys(dataSource.people).length : 0;
+    tabsHtml = `
+      <div class="tab-bar">
+        <button class="tab-btn ${state.currentTab === 'schedule' ? 'active' : ''}" id="tabScheduleBtn">Weekly Timetable</button>
+        <button class="tab-btn ${state.currentTab === 'master' ? 'active' : ''}" id="tabMasterBtn">Master Resident List (${residentCount})</button>
+      </div>
+    `;
+  }
+
+  let mainContentHtml = '';
+  if ((isAssigned || isPreview) && state.currentTab === 'master') {
+    mainContentHtml = renderMasterTableHtml(isAssigned ? state.allAssignments : state.previewData);
+  } else {
+    mainContentHtml = renderScheduleGridHtml(isAssigned || isPreview, isAssigned ? state.allAssignments : state.previewData);
+  }
+
+  let switchBackBarHtml = '';
+  if (isPreview) {
+    switchBackBarHtml = `
+      <div class="preview-switchback-bar">
+        <div>
+          <strong>Want to change your preferred slots?</strong>
+          <div style="font-size: 0.78rem; color: var(--ink-muted); margin-top: 2px;">
+            Switch back to edit preferences, pick different slots, and save to re-simulate.
+          </div>
+        </div>
+        <button class="btn-sm" id="bottomSwitchBackToPrefsBtn" style="border-color: var(--primary); color: var(--primary); font-weight: 700; padding: 8px 14px;">
+          &larr; Switch Back to Edit Preferences
+        </button>
+      </div>
+    `;
+  }
+
+  let legendHtml = '';
+  if (isPreview) {
+    legendHtml = `
+      <div class="legend-card">
+        <div class="legend-row">
+          <div class="legend-item">
+            <span class="swatch" style="background: var(--gold-bg); border: 1.5px solid var(--gold);"></span>
+            <strong>Your Projected Slot (Gold)</strong>
+          </div>
+          <div class="legend-item">
+            <span class="swatch" style="background: var(--surface-raised); border: 1px solid var(--line);"></span>
+            <strong>Other Residents' Projected Slots (Up to 3 machines/slot)</strong>
+          </div>
+        </div>
+        <div style="font-size: 0.76rem; color: var(--ink-muted); line-height: 1.5;">
+          Allotment preview is live & computed using the optimal min-cost max-flow algorithm. It changes as residents submit or adjust their preferences. Database is not modified until finalized by admin.
+        </div>
+      </div>
+    `;
+  } else if (isAssigned) {
+    legendHtml = `
+      <div class="legend-card">
+        <div class="legend-row">
+          <div class="legend-item">
+            <span class="swatch" style="background: var(--gold-bg); border: 1.5px solid var(--gold);"></span>
+            <strong>Your Assigned Slot (Gold)</strong>
+          </div>
+        </div>
+        <div style="font-size: 0.76rem; color: var(--ink-muted); line-height: 1.5;">
+          Allocations are finalized. Each cycle accommodates 3 residents across the 3 washing machines.
+        </div>
+      </div>
+    `;
+  } else {
+    legendHtml = `
+      <div class="legend-card">
+        <div class="legend-row">
+          <div class="legend-item">
+            <span class="swatch" style="background: var(--green-bg); border: 1px solid var(--green);"></span>
+            <strong>Open (&lt;3/3 first choices)</strong>
+          </div>
+          <div class="legend-item">
+            <span class="swatch" style="background: var(--amber-bg); border: 1px solid var(--amber);"></span>
+            <strong>Full (3/3 first choices)</strong>
+          </div>
+          <div class="legend-item">
+            <span class="swatch" style="background: var(--red-bg); border: 1px solid var(--red);"></span>
+            <strong>Oversubscribed (&gt;3 first choices)</strong>
+          </div>
+        </div>
+        <div style="font-size: 0.76rem; color: var(--ink-muted); line-height: 1.5;">
+          3 machines run in each 1.5h slot. Choosing quieter slots increases the probability of receiving your top preferences.
+        </div>
+      </div>
+    `;
+  }
+
+  app.innerHTML = `
+    ${headerHtml}
+    ${modeNavHtml}
+    ${heroBannerHtml}
+    ${previewStatsHtml}
+    ${tabsHtml}
+    ${priorityBarHtml}
+    ${mainContentHtml}
+    ${switchBackBarHtml}
+    ${legendHtml}
+    ${renderAdminModalHtml()}
+  `;
+
+  // Attach event handlers
+  document.getElementById('switchUserBtn').onclick = () => logoutResident();
+  if(document.getElementById('downloadCalBtn') && state.myAssignment) {
+    document.getElementById('downloadCalBtn').onclick = () => {
+      downloadICS(state.myAssignment.day, state.myAssignment.time_range);
+    };
+  }
+  if(document.getElementById('downloadPdfBtn')) {
+    document.getElementById('downloadPdfBtn').onclick = () => {
+      downloadAllocationsPdf('all', false);
+    };
+  }
+  if(document.getElementById('printScheduleBtn')) {
+    document.getElementById('printScheduleBtn').onclick = () => window.print();
+  }
+
+  if(document.getElementById('modePrefsBtn')) {
+    document.getElementById('modePrefsBtn').onclick = switchToPreferences;
+  }
+  if(document.getElementById('modePreviewBtn')) {
+    document.getElementById('modePreviewBtn').onclick = switchToPreview;
+  }
+  if(document.getElementById('jumpToPreviewBtn')) {
+    document.getElementById('jumpToPreviewBtn').onclick = switchToPreview;
+  }
+  if(document.getElementById('quickPreviewBtn')) {
+    document.getElementById('quickPreviewBtn').onclick = switchToPreview;
+  }
+  if(document.getElementById('switchBackToPrefsBtn')) {
+    document.getElementById('switchBackToPrefsBtn').onclick = switchToPreferences;
+  }
+  if(document.getElementById('bottomSwitchBackToPrefsBtn')) {
+    document.getElementById('bottomSwitchBackToPrefsBtn').onclick = switchToPreferences;
+  }
+
+  if(document.getElementById('savePicksBtn')) {
+    document.getElementById('savePicksBtn').onclick = savePick;
+  }
+
+  if(document.getElementById('tabScheduleBtn')) {
+    document.getElementById('tabScheduleBtn').onclick = () => { state.currentTab = 'schedule'; render(); };
+  }
+  if(document.getElementById('tabMasterBtn')) {
+    document.getElementById('tabMasterBtn').onclick = () => { state.currentTab = 'master'; render(); };
+  }
+
+  if(!isPreview && !isAssigned) {
+    document.querySelectorAll('.pchip').forEach(el => {
+      el.onclick = () => setActivePriority(Number(el.dataset.p));
+    });
+
+    document.querySelectorAll('.slotcell').forEach(el => {
+      el.onclick = () => handleCellClick(el.dataset.sid);
+    });
+  }
+
+  attachMasterTableEvents();
+  attachAdminModalEvents();
+}
+
+function renderScheduleGridHtml(isAssignedOrPreview, assignmentSource = null){
+  const isFinalAssigned = state.status.lifecycle === 'assigned';
+  const isPreview = !isFinalAssigned && state.activeView === 'preview';
+  const myPreviewAssigned = isPreview ? getMyPreviewAssignment() : null;
+
+  let tableHtml = `<div class="tablewrap"><table><thead><tr><th class="timecol">Time (24/7)</th>`;
+  DAYS.forEach(d => tableHtml += `<th>${d}</th>`);
+  tableHtml += `</tr></thead><tbody>`;
+
+  TIMES.forEach((t, ti) => {
+    tableHtml += `<tr><td class="timecol">${t[0]}&ndash;${t[1]}</td>`;
+    DAYS.forEach(d => {
+      const sid = slotId(d, ti);
+      const myPriority = state.priorities[sid];
+      
+      let isMyAssigned = false;
+      if (isFinalAssigned) {
+        isMyAssigned = state.myAssignment && state.myAssignment.slot === sid;
+      } else if (isPreview) {
+        isMyAssigned = myPreviewAssigned && myPreviewAssigned.slot === sid;
+      }
+
+      const c = state.counts[sid] || {1:0,2:0,3:0,4:0,5:0,6:0,7:0,total:0};
+      const badgeClass = c.total > 3 ? 'over' : (c.total === 3 ? 'full' : 'ok');
+
+      let assignedPeopleHtml = '';
+      if(isAssignedOrPreview && assignmentSource && assignmentSource.slots && assignmentSource.slots[sid]) {
+        const assignedList = assignmentSource.slots[sid] || [];
+        assignedPeopleHtml = `<div class="assigned-peeps">`;
+        assignedList.forEach(p => {
+          const isMe = state.person && sanitize(state.person.name) === sanitize(p.name) && sanitize(state.person.room) === sanitize(p.room);
+          assignedPeopleHtml += `
+            <div class="peep-pill ${isMe ? 'is-me' : ''}" title="${escapeHtml(p.name)} (${escapeHtml(p.room)})">
+              <strong>${escapeHtml(p.room)}</strong> ${escapeHtml(p.name.split(' ')[0])} <span style="font-size:0.62rem; opacity:0.85;">${p.priority_awarded ? `P${p.priority_awarded}` : 'F'}</span>
+            </div>
+          `;
+        });
+        assignedPeopleHtml += `</div>`;
+      }
+
+      let pipsHtml = '';
+      if(!isAssignedOrPreview){
+        for(let p=1; p<=7; p++){
+          const n = c[p];
+          pipsHtml += `<span class="pip ${n===0?'zero':''}" style="${n>0?`background:${PRIORITY_COLORS[p]}`:''}" title="Priority ${p}: ${n} residents">${n>0?n:''}</span>`;
+        }
+      }
+
+      let badgeHtml = '';
+      if (isMyAssigned) {
+        badgeHtml = `<span class="mine-badge" style="background:var(--gold); color:#fff;">${isFinalAssigned ? 'YOUR ASSIGNED SLOT' : 'YOUR PREVIEWED SLOT'}</span>`;
+      } else if (myPriority && !isAssignedOrPreview) {
+        badgeHtml = `<span class="mine-badge" style="background:${PRIORITY_COLORS[myPriority]}">YOUR P${myPriority}</span>`;
+      } else if (myPriority && isPreview) {
+        badgeHtml = `<span class="mine-badge" style="background:${PRIORITY_COLORS[myPriority]}; opacity:0.85;">CHOSEN P${myPriority}</span>`;
+      }
+
+      tableHtml += `
+        <td class="slotcell ${myPriority ? 'mine' : ''} ${isMyAssigned ? 'my-assigned-slot' : ''}" data-sid="${sid}" style="${isAssignedOrPreview ? 'cursor:default;' : ''}">
+          <div class="cell-inner">
+            ${badgeHtml}
+            ${!isAssignedOrPreview ? `<span class="total-badge ${badgeClass}">${c.total}/3</span>` : ''}
+            ${!isAssignedOrPreview ? `<div class="pips">${pipsHtml}</div>` : assignedPeopleHtml}
+          </div>
+        </td>
+      `;
+    });
+    tableHtml += `</tr>`;
+  });
+  tableHtml += `</tbody></table></div>`;
+  return tableHtml;
+}
+
+function renderMasterTableHtml(assignmentSource = null){
+  const dataSource = assignmentSource || (state.status.lifecycle === 'assigned' ? state.allAssignments : state.previewData);
+  if(!dataSource || !dataSource.people) {
+    return `<div class="master-wrap"><p style="color:var(--ink-muted); padding:10px 0;">No allocation data loaded yet.</p></div>`;
+  }
+
+  let people = Object.values(dataSource.people);
+
+  if(state.masterSearch) {
+    const q = state.masterSearch.toLowerCase();
+    people = people.filter(p => p.name.toLowerCase().includes(q) || p.room.toLowerCase().includes(q) || (p.slot || '').toLowerCase().includes(q));
+  }
+
+  if(state.masterDayFilter !== 'ALL') {
+    people = people.filter(p => (p.slot || '').startsWith(state.masterDayFilter));
+  }
+
+  people.sort((a,b) => (a.room || '').localeCompare(b.room || '', undefined, { numeric: true }));
+
+  let dayFiltersHtml = `<button class="filter-pill ${state.masterDayFilter === 'ALL' ? 'active' : ''}" data-day="ALL">All</button>`;
+  DAYS.forEach(d => {
+    dayFiltersHtml += `<button class="filter-pill ${state.masterDayFilter === d ? 'active' : ''}" data-day="${d}">${d}</button>`;
+  });
+
+  let rowsHtml = '';
+  people.forEach(p => {
+    const isMe = state.person && sanitize(state.person.name) === sanitize(p.name) && sanitize(state.person.room) === sanitize(p.room);
+    const pColor = p.priority_awarded ? PRIORITY_COLORS[p.priority_awarded] : 'var(--ink-muted)';
+    const pText = p.priority_awarded ? `Choice #${p.priority_awarded}` : 'Fallback';
+    rowsHtml += `
+      <tr style="${isMe ? 'background: var(--gold-bg); font-weight: 700;' : ''}">
+        <td><strong>${escapeHtml(p.room)}</strong></td>
+        <td>${escapeHtml(p.name)} ${isMe ? '(You)' : ''}</td>
+        <td><span class="mono">${p.slot_label || formatSlotLabelClient(p.slot)}</span></td>
+        <td><span class="priority-tag" style="background: ${pColor};">${pText}</span></td>
+      </tr>
+    `;
+  });
+
+  return `
+    <div class="master-wrap">
+      <div class="master-controls" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <input type="text" id="masterSearchInput" class="search-input" style="flex:1; min-width:220px;" placeholder="Search resident name, room, or day..." value="${escapeHtml(state.masterSearch)}" />
+        <button class="btn-sm export-pdf-btn" id="masterExportPdfBtn" style="border-color:var(--primary); color:var(--primary); font-weight:700; white-space:nowrap; padding:8px 12px;">
+          Export PDF
+        </button>
+        <button class="btn-sm export-pdf-btn" id="masterPrintBtn" style="border-color:var(--ink-muted); color:var(--ink); white-space:nowrap; padding:8px 12px;">
+          Print Notice
+        </button>
+      </div>
+      <div class="day-filter-bar" style="margin-bottom: 16px;">
+        ${dayFiltersHtml}
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="master-table">
+          <thead>
+            <tr>
+              <th>Room</th>
+              <th>Resident Name</th>
+              <th>Assigned Day & Time</th>
+              <th>Priority Awarded</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml || '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--ink-muted);">No matching residents found.</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function attachMasterTableEvents(){
+  const searchInput = document.getElementById('masterSearchInput');
+  if(searchInput) {
+    searchInput.oninput = (e) => {
+      state.masterSearch = e.target.value;
+      render();
+      const el = document.getElementById('masterSearchInput');
+      if(el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    };
+  }
+
+  const masterExportBtn = document.getElementById('masterExportPdfBtn');
+  if(masterExportBtn) {
+    masterExportBtn.onclick = () => {
+      const isPreview = state.status.lifecycle !== 'assigned' && state.activeView === 'preview';
+      downloadAllocationsPdf('all', isPreview);
+    };
+  }
+
+  const masterPrintBtn = document.getElementById('masterPrintBtn');
+  if(masterPrintBtn) {
+    masterPrintBtn.onclick = () => window.print();
+  }
+
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    btn.onclick = () => {
+      state.masterDayFilter = btn.dataset.day;
+      render();
+    };
+  });
+}
+
+// ---------------- Admin Modal ----------------
+function renderAdminModalHtml(){
+  if(!state.adminModalOpen) return '';
+
+  const stats = state.status.stats || state.adminStats || {};
+  const totalAssigned = state.status.total_assigned || 0;
+
+  let statsDisplayHtml = '';
+  if(Object.keys(stats).length > 0) {
+    let statBoxes = '';
+    for(let p=1; p<=7; p++){
+      const cnt = stats[String(p)] || 0;
+      const pct = totalAssigned > 0 ? Math.round((cnt / totalAssigned) * 100) : 0;
+      statBoxes += `
+        <div class="stat-card">
+          <div class="val" style="color: ${PRIORITY_COLORS[p]}">${cnt}</div>
+          <div class="lbl">Choice #${p} (${pct}%)</div>
+        </div>
+      `;
+    }
+    const fallbacks = stats['fallback'] || 0;
+    statBoxes += `
+      <div class="stat-card">
+        <div class="val" style="color: var(--ink-muted)">${fallbacks}</div>
+        <div class="lbl">Fallback</div>
+      </div>
+    `;
+
+    statsDisplayHtml = `
+      <div style="margin-top: 16px;">
+        <h4 style="margin:0 0 10px; font-size:0.86rem; text-transform:uppercase; letter-spacing:0.04em;">Satisfaction Breakdown</h4>
+        <div class="stat-grid">${statBoxes}</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="modal-overlay" id="adminModalOverlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>Admin Control Panel</h3>
+          <button id="closeAdminBtn" style="background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="val">${state.adminResidentCount ?? state.status.resident_count ?? 0}</div>
+              <div class="lbl">Registered Residents</div>
+            </div>
+            <div class="stat-card">
+              <div class="val">${state.status.total_submitted || 0}</div>
+              <div class="lbl">Residents Who Chose Slots</div>
+            </div>
+            <div class="stat-card">
+              <div class="val">${state.status.lifecycle === 'assigned' ? 'FINALIZED' : 'OPEN'}</div>
+              <div class="lbl">Status</div>
+            </div>
+          </div>
+
+          <label for="adminKeyField">Admin Key</label>
+          <input type="password" id="adminKeyField" placeholder="Paste admin secret key..." value="${escapeHtml(state.adminKeyInput)}" />
+          <a href="/admin" target="_blank" rel="noopener" style="display:block; margin:-6px 0 14px; color:var(--primary); font-size:0.8rem;">Open Full Admin Roster Dashboard</a>
+
+          ${state.adminMsg ? `<div style="font-size:0.84rem; font-weight:600; margin-bottom:12px; color:var(--primary);">${state.adminMsg}</div>` : ''}
+
+          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom: 20px;">
+            <button class="btn-primary" id="runAssignBtn" ${state.adminRunning ? 'disabled' : ''}>
+              ${state.adminRunning ? 'Computing Allocation&hellip;' : 'Run Optimal Allocation (MCMF)'}
+            </button>
+            <div style="display:flex; gap:10px;">
+              <button class="btn-sm" id="resetAssignBtn" style="color:var(--red); border-color:var(--red);">
+                Reset Allocations
+              </button>
+              <button class="btn-sm" id="resumePreferencesBtn" style="color:var(--primary); border-color:var(--primary);">
+                Resume Preference Choosing
+              </button>
+            </div>
+            <button class="btn-sm" id="adminExportPdfBtn" style="color:#0284c7; border-color:#0284c7; font-weight:700; padding:8px 12px; margin-top:2px;">
+              Export Allocations (PDF)
+            </button>
+          </div>
+
+          <div style="border-top: 1px solid var(--line); padding-top: 14px;">
+            <label for="resetPinTarget">Reset Resident PIN</label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="resetPinTarget" placeholder="e.g. 75 or Arya" style="margin-bottom:0;" value="${escapeHtml(state.adminResetTarget)}" />
+              <button class="btn-sm" id="resetPinBtn">Reset PIN</button>
+            </div>
+          </div>
+
+          ${statsDisplayHtml}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function attachAdminModalEvents(){
+  const openBtn = document.getElementById('openAdminBtn');
+  if(openBtn) {
+    openBtn.onclick = () => {
+      state.adminModalOpen = true;
+      state.adminMsg = "";
+      render();
+      loadAdminResidentCount();
+    };
+  }
+
+  const closeBtn = document.getElementById('closeAdminBtn');
+  if(closeBtn) {
+    closeBtn.onclick = () => {
+      state.adminModalOpen = false;
+      render();
+    };
+  }
+
+  const overlay = document.getElementById('adminModalOverlay');
+  if(overlay) {
+    overlay.onclick = (e) => {
+      if(e.target === overlay) {
+        state.adminModalOpen = false;
+        render();
+      }
+    };
+  }
+
+  const keyField = document.getElementById('adminKeyField');
+  if(keyField) {
+    keyField.oninput = (e) => {
+      state.adminKeyInput = e.target.value.trim();
+      state.adminResidentCount = null;
+      clearTimeout(state.adminCountTimer);
+      state.adminCountTimer = setTimeout(loadAdminResidentCount, 300);
+    };
+  }
+
+  const runBtn = document.getElementById('runAssignBtn');
+  if(runBtn) {
+    runBtn.onclick = runAdminAssign;
+  }
+
+  const resetBtn = document.getElementById('resetAssignBtn');
+  if(resetBtn) {
+    resetBtn.onclick = resetAdminAssignments;
+  }
+
+  const resumePreferencesBtn = document.getElementById('resumePreferencesBtn');
+  if(resumePreferencesBtn) {
+    resumePreferencesBtn.onclick = resumePreferenceChoosing;
+  }
+
+  const adminExportPdfBtn = document.getElementById('adminExportPdfBtn');
+  if(adminExportPdfBtn) {
+    adminExportPdfBtn.onclick = () => {
+      downloadAllocationsPdf('all', false, state.adminKeyInput || null);
+    };
+  }
+
+  const resetPinTarget = document.getElementById('resetPinTarget');
+  if(resetPinTarget) {
+    resetPinTarget.oninput = (e) => {
+      state.adminResetTarget = e.target.value;
+    };
+  }
+  const resetPinBtn = document.getElementById('resetPinBtn');
+  if(resetPinBtn) {
+    resetPinBtn.onclick = resetResidentPin;
+  }
+}
+
+function escapeHtml(str){
+  return (str||"").replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+  }[m]));
+}
+
+function render(){
+  const pageScrollY = window.scrollY;
+  const tableWrap = document.querySelector('.tablewrap');
+  const tableScrollTop = tableWrap ? tableWrap.scrollTop : null;
+  const tableScrollLeft = tableWrap ? tableWrap.scrollLeft : null;
+  const activeElement = document.activeElement;
+  const activeId = activeElement && activeElement.id;
+  const activeValue = activeElement && typeof activeElement.value === 'string' ? activeElement.value : null;
+  const selectionStart = activeElement && typeof activeElement.selectionStart === 'number' ? activeElement.selectionStart : null;
+  const selectionEnd = activeElement && typeof activeElement.selectionEnd === 'number' ? activeElement.selectionEnd : null;
+  if(!state.person){
+    renderAuth();
+  } else {
+    renderApp();
+  }
+  if(activeId){
+    const keyField = document.getElementById(activeId);
+    if(keyField){
+      if(activeValue !== null && typeof keyField.value === 'string'){
+        keyField.value = activeValue;
+      }
+      keyField.focus({ preventScroll: true });
+      if(selectionStart !== null && selectionEnd !== null){
+        keyField.setSelectionRange(selectionStart, selectionEnd);
+      }
+    }
+  }
+  requestAnimationFrame(() => {
+    window.scrollTo(0, pageScrollY);
+    const newTableWrap = document.querySelector('.tablewrap');
+    if(newTableWrap && tableScrollTop !== null){
+      newTableWrap.scrollTop = tableScrollTop;
+      newTableWrap.scrollLeft = tableScrollLeft;
+    }
+  });
+}
+
+// ---------------- Boot ----------------
+async function init(){
+  await loadServerStatus();
+  await loadCounts();
+  const lastName = localStorage.getItem('laundry_last_name');
+  const lastRoom = localStorage.getItem('laundry_last_room');
+  const token = localStorage.getItem('laundry_session_token');
+  if(lastName && lastRoom && token) {
+    state.person = { name: lastName, room: lastRoom };
+    state.sessionToken = token;
+    await loadMyPick(lastName, lastRoom);
+    await loadMyAssignment(lastName, lastRoom);
+    await loadAllAssignments();
+  }
+  render();
+}
+
+init();
+
+// Real-time synchronization: Poll every 3 seconds for active sync across WLAN
+setInterval(async () => {
+  if(!state.saving && !state.adminRunning){
+    await loadServerStatus();
+    await loadCounts();
+    if(state.activeView === 'preview' && state.person){
+      await loadPreviewAssignment(false);
+    }
+    if(state.adminModalOpen) await loadAdminResidentCount();
+  }
+}, 3000);
+
+// Sync immediately when user switches back to this tab
+window.addEventListener('focus', async () => {
+  await loadServerStatus();
+  await loadCounts();
+  if(state.person){
+    await loadMyPick(state.person.name, state.person.room);
+    await loadMyAssignment(state.person.name, state.person.room);
+    if(state.activeView === 'preview'){
+      await loadPreviewAssignment(false);
+    }
+  }
+});
+</script>
+</body>
+</html>

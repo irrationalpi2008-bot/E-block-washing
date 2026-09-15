@@ -1,0 +1,27 @@
+# Local HTTPS reverse proxy configuration for Caddy
+# By default, this listens on port 8443 on all network interfaces.
+# To customize the host/domain, set the SITE_ADDRESS environment variable:
+#   SITE_ADDRESS="192.168.1.100:8443" caddy run --config Caddyfile
+# For production with a public domain on standard ports (80/443):
+#   SITE_ADDRESS="laundry.yourdomain.edu" caddy run --config Caddyfile
+
+{
+	auto_https disable_redirects
+	skip_install_trust
+}
+
+{$SITE_ADDRESS::8443} {
+	tls internal
+	encode zstd gzip
+
+	reverse_proxy 127.0.0.1:8000
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+}

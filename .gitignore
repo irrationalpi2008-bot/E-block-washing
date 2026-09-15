@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite databases & runtime data
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+laundry.db*
+
+# Secrets and credentials
+admin_key.txt
+.env
+*.key
+*.pem
+
+# Production / sensitive rosters and data
+admin_roster.csv
+Washing Machine.csv
+roster.csv
+*.csv
+!roster.example.csv
+
+# Exports and temporary files
+*.pdf
+*.tmp
+.*.tmp
+*.log
+
+# Caddy data and autosave
+.caddy/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
