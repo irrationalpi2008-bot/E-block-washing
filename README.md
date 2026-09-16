@@ -97,7 +97,7 @@ No third-party Python packages are required.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/irrational-pi-byte/E-block-washing.git
+git clone https://github.com/irrationalpi2008-bot/E-block-washing.git
 cd E-block-washing
 ```
 
